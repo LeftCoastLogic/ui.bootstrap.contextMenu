@@ -212,6 +212,9 @@
 
             $li.on('click', function ($event) {
               if($event.which == 1) {
+                if(item && item.disAllowPropagation){
+                  $event.stopPropagation();
+                }
                 $event.preventDefault();
                 $scope.$apply(function () {
 
