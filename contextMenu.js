@@ -591,6 +591,19 @@
               // Remove the menu when the scroll moves
               $document.on('scroll', removeOnScrollEvent);
 
+              /**
+               * Clicking on iframe element, the click event is not fired on window element.
+               * So the context menu is not closed.
+               * Using the blur event on window element to resolve this issue.
+               * */
+              var $windowElement = angular.element($window);
+              var blurListener = $windowElement.on('blur', function(e) {
+                if (document.activeElement === document.getElementsByTagName('iframe')[0]) {
+                  removeOnOutsideClickEvent(e);
+                }
+                $windowElement.off('blur', blurListener);
+              });
+
               _clickedElement = event.currentTarget;
               $(_clickedElement).addClass('context');
 
