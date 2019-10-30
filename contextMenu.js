@@ -575,11 +575,32 @@
           }
 
           angular.forEach(openMenuEvents, function (openMenuEvent) {
-            element.on(openMenuEvent.trim(), function (event) {
-              if(!attrs.allowEventPropagation) {
-                event.stopPropagation();
-                event.preventDefault();
-              }
+            element.on(openMenuEvent.trim(), openMenuEventHandler);
+          });
+
+          if (attrs.closeMenuOn) {
+            $scope.$on(attrs.closeMenuOn, function () {
+              removeAllContextMenus();
+            });
+          }
+
+          attrs.$observe('contextMenuOn', function (events) {
+            element.off('contextmenu', openMenuEventHandler);
+            element.off('click', openMenuEventHandler);
+            events = events.split(',');
+            if(events.indexOf('contextmenu') !== -1) {
+              element.on('contextmenu', openMenuEventHandler);
+            } 
+            if(events.indexOf('click') !== -1) {
+              element.on('click', openMenuEventHandler);
+            }
+          });
+
+          function openMenuEventHandler(event) {
+            if(!attrs.allowEventPropagation) {
+              event.stopPropagation();
+              event.preventDefault();
+            }
 
               // Don't show context menu if on touch device and element is draggable
               if(isTouchDevice() && element.attr('draggable') === 'true') {
@@ -636,8 +657,7 @@
               $scope.$on('$destroy', function () {
                 removeAllContextMenus();
               });
-            });
-          });
+          }
 
           if (attrs.closeMenuOn) {
             $scope.$on(attrs.closeMenuOn, function () {
